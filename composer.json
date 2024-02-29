@@ -1,0 +1,17 @@
+{
+  "name": "plugin/owc-gravityforms-openagenda",
+  "description": "GravityForms integration for OpenAgenda",
+  "type": "wordpress-plugin",
+  "config": {
+    "preferred-install": "dist",
+    "optimize-autoloader": true,
+    "sort-packages": true
+  },
+  "authors": [
+    {
+      "name": "Yard | Digital Agency",
+      "email": "owc@yard.nl",
+      "homepage": "https://www.yard.nl"
+    }
+  ]
+}
