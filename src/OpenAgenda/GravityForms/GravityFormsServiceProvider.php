@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace OWC\OpenAgenda\GravityForms;
 
+use GFAddOn;
+use GFForms;
 use OWC\OpenAgenda\Foundation\ServiceProvider;
 
 class GravityFormsServiceProvider extends ServiceProvider
@@ -14,10 +16,10 @@ class GravityFormsServiceProvider extends ServiceProvider
         $this->plugin->loader->addFilter('gform_predefined_choices', $this, 'addBulkChoices');
     }
 
-    public function registerAddOn()
+    public function registerAddOn(): void
     {
-        \GFForms::include_feed_addon_framework();
-        \GFAddOn::register(GravityFormsAddon::class);
+        GFForms::include_feed_addon_framework();
+        GFAddOn::register(GravityFormsAddon::class);
     }
 
     public function addBulkChoices(array $choices): array
@@ -39,7 +41,7 @@ class GravityFormsServiceProvider extends ServiceProvider
             'Elke tweede|second',
             'Elke derde|third',
             'Elke vierde|fourth',
-            'Elke laatste|last'
+            'Elke laatste|last',
         ];
         $choices['OpenAgenda: Weekdagen'] = [
             'Maandag|monday',
@@ -62,7 +64,7 @@ class GravityFormsServiceProvider extends ServiceProvider
             'September|september',
             'Oktober|october',
             'November|november',
-            'December|december'
+            'December|december',
         ];
         $choices['OpenAgenda: Toegankelijkheid'] = [
             'Openbaar|public',

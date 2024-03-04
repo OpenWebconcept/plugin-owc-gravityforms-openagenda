@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace OWC\OpenAgenda\GravityForms;
 
-class GravityFormsAddon extends \GFFeedAddOn
+use GFFeedAddOn;
+
+class GravityFormsAddon extends GFFeedAddOn
 {
     protected $_version = OWC_GF_OPENAGENDA_VERSION;
     protected $_min_gravityforms_version = '2.6';
@@ -27,7 +29,7 @@ class GravityFormsAddon extends \GFFeedAddOn
      */
     public static function get_instance()
     {
-        if (self::$_instance == null) {
+        if (null == self::$_instance) {
             self::$_instance = new self();
         }
 
@@ -41,31 +43,30 @@ class GravityFormsAddon extends \GFFeedAddOn
 
     public function plugin_settings_fields()
     {
-
         //TODO: verplaatsen naar eigen class
         return [
             [
-                'title'  => esc_html__('OpenAgenda', 'owc-gravityforms-openagenda'),
+                'title' => esc_html__('OpenAgenda', 'owc-gravityforms-openagenda'),
                 'fields' => [
                     [
-                        'name'       => 'rest_api_base_url',
-                        'label'      => esc_html__('REST API url', 'owc-gravityforms-openagenda'),
-                        'type'       => 'text',
+                        'name' => 'rest_api_base_url',
+                        'label' => esc_html__('REST API url', 'owc-gravityforms-openagenda'),
+                        'type' => 'text',
                         'input_type' => 'url',
-                        'required'   => true,
+                        'required' => true,
                     ],
                     [
-                        'name'       => 'rest_api_username',
-                        'label'      => esc_html__('Gebruikersnaam', 'owc-gravityforms-openagenda'),
-                        'type'       => 'text',
-                        'required'   => true,
+                        'name' => 'rest_api_username',
+                        'label' => esc_html__('Gebruikersnaam', 'owc-gravityforms-openagenda'),
+                        'type' => 'text',
+                        'required' => true,
                     ],
                     [
-                        'name'       => 'rest_api_password',
-                        'label'      => esc_html__('Wachtwoord', 'owc-gravityforms-openagenda'),
-                        'type'       => 'text',
+                        'name' => 'rest_api_password',
+                        'label' => esc_html__('Wachtwoord', 'owc-gravityforms-openagenda'),
+                        'type' => 'text',
                         'input_type' => 'password',
-                        'required'   => true,
+                        'required' => true,
                     ],
                 ],
             ],
@@ -78,19 +79,19 @@ class GravityFormsAddon extends \GFFeedAddOn
         //TODO: verplaatsen naar eigen class
         return [
             [
-                'title'  => esc_html__('OpenAgenda instellingen', 'owc-gravityforms-openagenda'),
+                'title' => esc_html__('OpenAgenda instellingen', 'owc-gravityforms-openagenda'),
                 'fields' => [
                     [
-                        'name'    => 'enabled',
-                        'type'    => 'toggle',
-                        'label'   => __('Exporteer evenement naar OpenAgenda', 'owc-gravityforms-openagenda'),
+                        'name' => 'enabled',
+                        'type' => 'toggle',
+                        'label' => __('Exporteer evenement naar OpenAgenda', 'owc-gravityforms-openagenda'),
                     ],
                     [
-                        'name'      => 'mappedFields',
-                        'label'     => esc_html__('API mapping', 'owc-gravityforms-openagenda'),
-                        'type'      => 'field_map',
+                        'name' => 'mappedFields',
+                        'label' => esc_html__('API mapping', 'owc-gravityforms-openagenda'),
+                        'type' => 'field_map',
                         'dependency' => [
-                            'live'   => true,
+                            'live' => true,
                             'fields' => [
                                 [
                                     'field' => 'enabled',
@@ -99,173 +100,173 @@ class GravityFormsAddon extends \GFFeedAddOn
                         ],
                         'field_map' => [
                             [
-                                'name'       => 'post_title',
-                                'label'      => esc_html__('Titel', 'owc-gravityforms-openagenda'),
-                                'required'   => false,
+                                'name' => 'post_title',
+                                'label' => esc_html__('Titel', 'owc-gravityforms-openagenda'),
+                                'required' => false,
                                 'field_type' => [ 'text' ],
                             ],
                             [
-                                'name'       => 'teaser',
-                                'label'      => esc_html__('Teaser', 'owc-gravityforms-openagenda'),
+                                'name' => 'teaser',
+                                'label' => esc_html__('Teaser', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'text',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'description',
-                                'label'      => esc_html__('Beschrijving', 'owc-gravityforms-openagenda'),
-                                'required'   => false,
+                                'name' => 'description',
+                                'label' => esc_html__('Beschrijving', 'owc-gravityforms-openagenda'),
+                                'required' => false,
                                 'field_type' => 'textarea',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'organizer',
-                                'label'      => esc_html__('Organisator', 'owc-gravityforms-openagenda'),
+                                'name' => 'organizer',
+                                'label' => esc_html__('Organisator', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'text',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'contact_person',
-                                'label'      => esc_html__('Contactpersoon', 'owc-gravityforms-openagenda'),
+                                'name' => 'contact_person',
+                                'label' => esc_html__('Contactpersoon', 'owc-gravityforms-openagenda'),
                                 'field_type' => ['text', 'name'],
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'phone_number',
-                                'label'      => esc_html__('Telefoonnummer', 'owc-gravityforms-openagenda'),
+                                'name' => 'phone_number',
+                                'label' => esc_html__('Telefoonnummer', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'phone',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'email_address',
-                                'label'      => esc_html__('E-mail', 'owc-gravityforms-openagenda'),
+                                'name' => 'email_address',
+                                'label' => esc_html__('E-mail', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'email',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'location_title',
-                                'label'      => esc_html__('Locatie', 'owc-gravityforms-openagenda'),
+                                'name' => 'location_title',
+                                'label' => esc_html__('Locatie', 'owc-gravityforms-openagenda'),
                                 'field_type' => ['text', 'address'],
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'location_address',
-                                'label'      => esc_html__('Adres', 'owc-gravityforms-openagenda'),
+                                'name' => 'location_address',
+                                'label' => esc_html__('Adres', 'owc-gravityforms-openagenda'),
                                 'field_type' => ['text', 'address'],
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'location_zipcode',
-                                'label'      => esc_html__('Postcode', 'owc-gravityforms-openagenda'),
+                                'name' => 'location_zipcode',
+                                'label' => esc_html__('Postcode', 'owc-gravityforms-openagenda'),
                                 'field_type' => ['text', 'address'],
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'location_city',
-                                'label'      => esc_html__('Stad', 'owc-gravityforms-openagenda'),
+                                'name' => 'location_city',
+                                'label' => esc_html__('Stad', 'owc-gravityforms-openagenda'),
                                 'field_type' => ['text', 'address'],
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'price_type',
-                                'label'      => esc_html__('Prijs soort', 'owc-gravityforms-openagenda'),
+                                'name' => 'price_type',
+                                'label' => esc_html__('Prijs soort', 'owc-gravityforms-openagenda'),
                                 'field_type' => ['select', 'radio'],
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'fixed_price',
-                                'label'      => esc_html__('Prijs', 'owc-gravityforms-openagenda'),
+                                'name' => 'fixed_price',
+                                'label' => esc_html__('Prijs', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'number',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'min_price',
-                                'label'      => esc_html__('Minimum prijs', 'owc-gravityforms-openagenda'),
+                                'name' => 'min_price',
+                                'label' => esc_html__('Minimum prijs', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'number',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'max_price',
-                                'label'      => esc_html__('Maximum prijs', 'owc-gravityforms-openagenda'),
+                                'name' => 'max_price',
+                                'label' => esc_html__('Maximum prijs', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'number',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'event_website_url',
-                                'label'      => esc_html__('Website evenement', 'owc-gravityforms-openagenda'),
+                                'name' => 'event_website_url',
+                                'label' => esc_html__('Website evenement', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'website',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'ticket_website_url',
-                                'label'      => esc_html__('Website tickets', 'owc-gravityforms-openagenda'),
+                                'name' => 'ticket_website_url',
+                                'label' => esc_html__('Website tickets', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'website',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'video_url',
-                                'label'      => esc_html__('Video URL', 'owc-gravityforms-openagenda'),
+                                'name' => 'video_url',
+                                'label' => esc_html__('Video URL', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'website',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'type',
-                                'label'      => esc_html__('Type', 'owc-gravityforms-openagenda'),
+                                'name' => 'type',
+                                'label' => esc_html__('Type', 'owc-gravityforms-openagenda'),
                                 'field_type' => ['select', 'radio'],
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'start_date',
-                                'label'      => esc_html__('Startdatum', 'owc-gravityforms-openagenda'),
+                                'name' => 'start_date',
+                                'label' => esc_html__('Startdatum', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'date',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'end_date',
-                                'label'      => esc_html__('Einddatum', 'owc-gravityforms-openagenda'),
+                                'name' => 'end_date',
+                                'label' => esc_html__('Einddatum', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'date',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'start_time',
-                                'label'      => esc_html__('Starttijd', 'owc-gravityforms-openagenda'),
+                                'name' => 'start_time',
+                                'label' => esc_html__('Starttijd', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'time',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'end_time',
-                                'label'      => esc_html__('Eindtijd', 'owc-gravityforms-openagenda'),
+                                'name' => 'end_time',
+                                'label' => esc_html__('Eindtijd', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'time',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'tax_thema',
-                                'label'      => esc_html__('Thema', 'owc-gravityforms-openagenda'),
+                                'name' => 'tax_thema',
+                                'label' => esc_html__('Thema', 'owc-gravityforms-openagenda'),
                                 'field_type' => ['multiselect', 'checkbox'],
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'tax_wijk',
-                                'label'      => esc_html__('Wijk', 'owc-gravityforms-openagenda'),
+                                'name' => 'tax_wijk',
+                                'label' => esc_html__('Wijk', 'owc-gravityforms-openagenda'),
                                 'field_type' => ['select', 'radio'],
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'media_files',
-                                'label'      => esc_html__('Bestanden', 'owc-gravityforms-openagenda'),
+                                'name' => 'media_files',
+                                'label' => esc_html__('Bestanden', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'fileupload',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'images',
-                                'label'      => esc_html__('Afbeeldingen', 'owc-gravityforms-openagenda'),
+                                'name' => 'images',
+                                'label' => esc_html__('Afbeeldingen', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'fileupload',
-                                'required'   => false,
+                                'required' => false,
                             ],
                             [
-                                'name'       => 'thumbnail',
-                                'label'      => esc_html__('Uitgelichte afbeelding', 'owc-gravityforms-openagenda'),
+                                'name' => 'thumbnail',
+                                'label' => esc_html__('Uitgelichte afbeelding', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'fileupload',
-                                'required'   => false,
+                                'required' => false,
                             ],
                         ],
                     ],
@@ -276,7 +277,6 @@ class GravityFormsAddon extends \GFFeedAddOn
 
     public function process_feed($feed, $entry, $form)
     {
-
         if (! (bool) rgars($feed, 'meta/enabled')) {
             return;
         }
@@ -289,14 +289,14 @@ class GravityFormsAddon extends \GFFeedAddOn
         // Default waardes
         $submission_data = [
             'price_type' => 'fixed',
-            'type'   => 'specific',
+            'type' => 'specific',
         ];
 
 
         foreach ($field_map as $name => $field_id) {
             if (in_array($name, ['start_date','end_date', 'start_time', 'end_time'])) {
                 $submission_data['dates'][0][$name] = $this->get_field_value($form, $entry, $field_id);
-            } elseif(in_array($name, ['tax_thema', 'tax_wijk'], true)) {
+            } elseif (in_array($name, ['tax_thema', 'tax_wijk'], true)) {
                 $submission_data[$name] = wp_parse_list($this->get_field_value($form, $entry, $field_id));
             } else {
                 $submission_data[ $name ] = $this->get_field_value($form, $entry, $field_id);
@@ -317,7 +317,7 @@ class GravityFormsAddon extends \GFFeedAddOn
             ]
         );
 
-        if(is_wp_error($response)) {
+        if (is_wp_error($response)) {
             $this->add_feed_error($response->get_error_message(), $feed, $entry, $form);
 
             return;
