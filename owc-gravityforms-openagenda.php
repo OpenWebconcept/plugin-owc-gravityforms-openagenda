@@ -48,5 +48,5 @@ if (file_exists(__DIR__ . '/vendor/autoload.php')) {
  * and wp_loaded action hooks.
  */
 \add_action('plugins_loaded', function () {
-    $plugin = (new \OWC\OpenAgenda\Foundation\Plugin(__DIR__))->boot();
+    \OWC\OpenAgenda\Foundation\Plugin::getInstance(__DIR__)->boot();
 }, 1);

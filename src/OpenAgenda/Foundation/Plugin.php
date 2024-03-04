@@ -1,7 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace OWC\OpenAgenda\Foundation;
 
+use CMDISP\MonologMicrosoftTeams\TeamsFormatter;
+use DI\Container;
+use DI\ContainerBuilder;
 use Exception;
 
 class Plugin
@@ -11,7 +16,8 @@ class Plugin
 
     public Config $config;
     public Loader $loader;
-    protected static Plugin $instance;
+    protected Container $container;
+    protected static $instance;
 
     protected string $rootPath;
 
@@ -20,14 +26,64 @@ class Plugin
         $this->rootPath = $rootPath;
         load_plugin_textdomain($this->getName(), false, $this->getName() . '/languages/');
 
-        $this->loader = new Loader();
-        $this->config = new Config($this->rootPath . '/config');
-        $this->config->setProtectedNodes(['core']);
-        $this->config->boot();
+        require_once __DIR__ . '/Helpers.php';
+        $this->buildContainer();
+    }
+
+    /**
+     * Return the Plugin instance
+     */
+    public static function getInstance($rootPath = ''): self
+    {
+        if (null == static::$instance) {
+            static::$instance = new static($rootPath);
+        }
+
+        return static::$instance;
+    }
+
+    protected function buildContainer(): void
+    {
+        $builder = new ContainerBuilder();
+        $builder->addDefinitions([
+            'app' => $this,
+            self::class => $this,
+            'config' => function () {
+                return new Config($this->rootPath . '/config');
+            },
+            'loader' => Loader::getInstance(),
+            'teams' => function () {
+                $logger = new \Monolog\Logger('microsoft-teams-logger');
+
+                if (true === env('MS_TEAMS_DISABLE_LOGGING_OPEN_AGENDA', true)) {
+                    return $logger->pushHandler(new \Monolog\Handler\NullHandler());
+                }
+
+                return $logger->pushHandler(new \CMDISP\MonologMicrosoftTeams\TeamsLogHandler(
+                    $_ENV['MS_TEAMS_WEBHOOK'],
+                    \Monolog\Logger::INFO,
+                    true,
+                    new TeamsFormatter()
+                ));
+            },
+
+        ]);
+        $builder->addDefinitions($this->rootPath . '/config/container.php');
+        $this->container = $builder->build();
+    }
+
+    public function getContainer(): Container
+    {
+        return $this->container;
     }
 
     public function boot(): bool
     {
+        $this->config = resolve('config');
+        $this->config->boot();
+
+        $this->loader = resolve('loader');
+
         $dependencyChecker = new DependencyChecker($this->config->get('core.dependencies'));
 
         if ($dependencyChecker->failed()) {
@@ -47,7 +103,7 @@ class Plugin
 
         $this->callServiceProviders('boot');
 
-        // Register the Hook loader.
+        $this->config->setProtectedNodes(['core']);
         $this->loader->register();
 
         return true;
@@ -61,7 +117,7 @@ class Plugin
     public function callServiceProviders(string $method, string $key = ''): void
     {
         $offset = $key ? "core.providers.{$key}" : 'core.providers';
-        $services = $this->config->get($offset);
+        $services = $this->config->get($offset, []);
 
         foreach ($services as $service) {
             if (is_array($service)) {
