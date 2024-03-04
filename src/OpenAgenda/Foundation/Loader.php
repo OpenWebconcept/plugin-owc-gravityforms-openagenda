@@ -23,6 +23,20 @@ class Loader
     protected array $filters = [];
 
     /**
+     * Retrieves an instance of the loader, and creates one if it doesn't exist.
+     */
+    public static function getInstance(): self
+    {
+        static $inst = null;
+
+        if (null === $inst) {
+            $inst = new Loader();
+        }
+
+        return $inst;
+    }
+
+    /**
      * Add a new action to the collection to be registered with WordPress.
      */
     public function addAction(string $hook, $component, string $callback, int $priority = 10, int $acceptedArgs = 1): void
