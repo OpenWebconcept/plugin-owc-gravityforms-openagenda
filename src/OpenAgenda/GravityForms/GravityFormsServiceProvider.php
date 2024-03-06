@@ -6,6 +6,7 @@ namespace OWC\OpenAgenda\GravityForms;
 
 use GFAddOn;
 use GFForms;
+use function OWC\OpenAgenda\Foundation\resolve;
 use OWC\OpenAgenda\Foundation\ServiceProvider;
 
 class GravityFormsServiceProvider extends ServiceProvider
@@ -24,58 +25,11 @@ class GravityFormsServiceProvider extends ServiceProvider
 
     public function addBulkChoices(array $choices): array
     {
-        //TODO: verplaatsen naar config file
-        $choices['OpenAgenda: Prijstype'] = [
-            'Vast (of gratis)|fixed',
-            'Vanaf|min',
-            'Variabel|min_max',
-        ];
+        $predefinedChoices = resolve('config')->get('predefined_choices_gf', []);
 
-        $choices['OpenAgenda: Datumtype'] = [
-            'Specified|specific',
-            'Comples|complex',
-        ];
-        $choices['OpenAgenda: Weekdag patroon'] = [
-            'Elke|every',
-            'Elke eerste|first',
-            'Elke tweede|second',
-            'Elke derde|third',
-            'Elke vierde|fourth',
-            'Elke laatste|last',
-        ];
-        $choices['OpenAgenda: Weekdagen'] = [
-            'Maandag|monday',
-            'Dinsdag|tuesday',
-            'Woensdag|wednesday',
-            'Donderdag|thursday',
-            'Vrijdag|friday',
-            'Zaterdag|saturday',
-            'Zondag|sunday',
-        ];
-        $choices['OpenAgenda: Maanden'] = [
-            'Januari|january',
-            'Februari|february',
-            'Maart|march',
-            'April|april',
-            'Mei|may',
-            'Juni|june',
-            'Juli|july',
-            'Augustus|august',
-            'September|september',
-            'Oktober|october',
-            'November|november',
-            'December|december',
-        ];
-        $choices['OpenAgenda: Toegankelijkheid'] = [
-            'Openbaar|public',
-            'Gedeeltelijk openbaar|partly_public',
-            'Besloten|closed',
-        ];
-        $choices['OpenAgenda: Registratie'] = [
-            'Niet vereist|not_required',
-            'Verplicht|mandatory',
-            'Optioneel|optional',
-        ];
+        foreach ($predefinedChoices as $key => $value) {
+            $choices[$key] = $value;
+        }
 
         return $choices;
     }
