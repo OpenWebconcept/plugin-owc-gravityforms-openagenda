@@ -58,6 +58,10 @@ class Config
         $current = $this->items;
 
         foreach ($parts as $part) {
+            if (empty($current[$part])) {
+                return $default;
+            }
+
             $current = $current[$part];
         }
 
