@@ -8,22 +8,36 @@ use DateTime;
 use DateTimeZone;
 use Exception;
 use OWC\OpenAgenda\Http\Handlers\Stack;
+use OWC\OpenAgenda\Resolvers\ContainerResolver;
 
 class Request
 {
     public const ENDPOINT = '';
+
+    protected string $restBase = '';
 
     protected string $baseURL;
     protected string $username;
     protected string $password;
     protected Stack $responseHandlers;
 
-    public function __construct(array $settings = [])
+    public function __construct()
     {
-        $this->baseURL = $settings['rest_api_base_url'];
-        $this->username = $settings['rest_api_username'];
-        $this->password = $settings['rest_api_password'];
+        $this->baseURL = ContainerResolver::make()->get('gf.addon.openagenda_api_base_url');
+        $this->username = ContainerResolver::make()->get('gf.addon.openagenda_api_username');
+        $this->password = ContainerResolver::make()->get('gf.addon.openagenda_api_password');
         $this->responseHandlers = Stack::create();
+    }
+
+    /**
+     * Allows setting a custom rest_base on an endpoint class.
+     * Could be used for a generic endpoint class e.g. for retrieving all the taxonomies connected to the event post type.
+     */
+    public function setRestBase(string $value): self
+    {
+        $this->restBase = $value;
+
+        return $this;
     }
 
     public function request(string $method = 'GET', array $args = []): array
@@ -77,7 +91,13 @@ class Request
 
     protected function makeURL(): string
     {
-        return sprintf('%s/%s', untrailingslashit($this->baseURL), untrailingslashit(static::ENDPOINT));
+        $urlParts = [
+            untrailingslashit($this->baseURL),
+            untrailingslashit(static::ENDPOINT),
+            untrailingslashit($this->restBase),
+        ];
+
+        return implode('/', array_filter($urlParts));
     }
 
     protected function handleResponse(Response $response): Response
