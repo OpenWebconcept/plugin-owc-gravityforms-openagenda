@@ -26,3 +26,17 @@ function config(string $setting = '', $default = '')
 {
     return resolve('config')->get($setting, $default);
 }
+
+/**
+ * Return a view.
+ */
+function view(string $template, array $vars = []): string
+{
+    $view = resolve(\OWC\OpenAgenda\Foundation\View::class);
+
+    if (! $view->exists($template)) {
+        return '';
+    }
+
+    return $view->render($template, $vars);
+}
