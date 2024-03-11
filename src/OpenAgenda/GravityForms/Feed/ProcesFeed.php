@@ -35,7 +35,7 @@ class ProcesFeed
     public function prepare(): self
     {
         $this->settings = $this->GFFeedAddOn->get_plugin_settings() ?: [];
-        $this->fieldMap = array_filter($this->GFFeedAddOn->get_field_map_fields($this->feed, 'mappedFields'));
+        $this->fieldMap = $this->GFFeedAddOn->get_field_map_fields($this->feed, 'mappedFields'); // Maybe use array_filter in the future. For now all the field are required otherwise the API will throw errors.
 
         return $this;
     }
@@ -43,6 +43,7 @@ class ProcesFeed
     public function process()
     {
         $this->populateSubmissionData();
+        $this->cleanupPossibleRedudantLocationData();
         $this->exportToOpenAgenda();
     }
 
@@ -51,21 +52,36 @@ class ProcesFeed
         foreach ($this->fieldMap as $name => $fieldID) {
             if (in_array($name, ['start_date','end_date', 'start_time', 'end_time'])) {
                 $this->submissionData['dates'][0][$name] = $this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID);
-            } elseif (in_array($name, ['tax_thema', 'tax_wijk'], true)) {
+            } elseif (str_starts_with($name, 'tax_')) {
+                $this->submissionData[$name] = wp_parse_list($this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID));
+            } elseif (in_array($name, ['media_files', 'images'])) {
                 $this->submissionData[$name] = wp_parse_list($this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID));
             } else {
-                $this->submissionData[ $name ] = $this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID);
+                $this->submissionData[$name] = $this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID);
             }
         }
 
-        $this->submissionData = array_filter($this->submissionData);
+        // Maybe use array_filter in the future. For now all the field are required otherwise the API will throw errors.
+        $this->submissionData = $this->submissionData;
+    }
+
+    protected function cleanupPossibleRedudantLocationData(): void
+    {
+        if (empty($this->submissionData['location'])) {
+            return;
+        }
+
+        unset($this->submissionData['location_description']);
+        unset($this->submissionData['location_address']);
+        unset($this->submissionData['location_zipcode']);
+        unset($this->submissionData['location_city']);
     }
 
     protected function exportToOpenAgenda(): void
     {
         try {
-            $result = (new ExportEvent($this->settings))->request('POST', $this->submissionData);
-        } catch(Exception $exception) {
+            $result = (new ExportEvent())->request('POST', $this->submissionData);
+        } catch (Exception $exception) {
             $this->GFFeedAddOn->add_feed_error($exception->getMessage(), $this->feed, $this->entry, $this->form);
 
             return;
