@@ -12,6 +12,13 @@ use OWC\OpenAgenda\Http\Endpoints\GetTaxonomyTerms;
 
 class Hooks
 {
+    private const ALLOWED_FIELD_TYPES = [
+        'select',
+        'multiselect',
+        'checkbox',
+        'radio',
+    ];
+
     public function addBulkChoices(array $choices): array
     {
         $predefinedChoices = resolve('config')->get('predefined_choices_gf', []);
@@ -55,12 +62,12 @@ class Hooks
     public function populateCheckboxes(array $form)
     {
         foreach ($form['fields'] as &$field) {
-            if (('select' !== $field->type && 'multiselect' !== $field->type) || empty($field->field_populate_external_option)) {
+            if (! in_array($field->type, self::ALLOWED_FIELD_TYPES)) {
                 continue;
             }
 
             try {
-                $choices = $this->prepareSelectOptions($field->field_populate_external_option);
+                $choices = $this->prepareFieldOptions($field->field_populate_external_option);
             } catch (Exception $e) {
 
                 continue;
@@ -72,7 +79,7 @@ class Hooks
         return $form;
     }
 
-    protected function prepareSelectOptions(string $option)
+    protected function prepareFieldOptions(string $option)
     {
         if (empty($option)) {
             return [];
@@ -81,10 +88,10 @@ class Hooks
         list($type, $restBase) = explode('.', $option); // $option is something like: tax.doelgroep.
 
         if ('tax' === $type) {
-            $options = $this->getSelectOptionsTax($restBase);
+            $options = $this->getFieldOptionsTax($restBase);
             $choices = $this->formatTaxOptions($options);
         } elseif ('post' === $type) {
-            $options = $this->getSelectOptionsPost($restBase);
+            $options = $this->getFieldOptionsPost($restBase);
             $choices = $this->formatPostOptions($options);
         } else {
             $choices = [];
@@ -97,14 +104,14 @@ class Hooks
         return $choices;
     }
 
-    protected function getSelectOptionsTax(string $restBase): array
+    protected function getFieldOptionsTax(string $restBase): array
     {
         $options = (new GetTaxonomyTerms())->setRestBase($restBase)->request('GET');
 
         return ! empty($options) ? $options : [];
     }
 
-    protected function getSelectOptionsPost(string $restBase): array
+    protected function getFieldOptionsPost(string $restBase): array
     {
         if ('locations' === $restBase) {
             $options = (new GetLocations())->request('GET');

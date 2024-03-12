@@ -243,7 +243,7 @@ class FeedSettings
             $eventTaxonomies[] = [
                 'name' => sprintf('tax_%s', $taxonomy['rest_base']),
                 'label' => sprintf('%s (Taxonomie)', $taxonomy['name']),
-                'field_type' => ['select', 'multiselect'],
+                'field_type' => ['select', 'multiselect', 'radio', 'checkbox'],
                 'required' => false,
             ];
         }
