@@ -6,6 +6,10 @@ trait ImageProcessingTrait
 {
     protected function urlToBase64($url): string
     {
+        if (empty($url)) {
+            return '';
+        }
+
         $contents = file_get_contents($url, false, $this->streamContext());
 
         return $contents ? base64_encode($contents) : '';

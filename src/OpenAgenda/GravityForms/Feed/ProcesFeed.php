@@ -43,7 +43,7 @@ class ProcesFeed
         return $this;
     }
 
-    public function process()
+    public function process(): void
     {
         try {
             $this->populateSubmissionData();

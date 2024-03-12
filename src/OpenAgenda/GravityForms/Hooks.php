@@ -32,7 +32,7 @@ class Hooks
 
     public function addExternalOptionsSelect($position, $formID): void
     {
-        //create settings on position 50 (right after Admin Label)
+        // Create settings on position 50 (right after Admin Label).
         if (50 !== $position) {
             return;
         }
