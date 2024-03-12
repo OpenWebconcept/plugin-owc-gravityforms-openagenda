@@ -7,9 +7,12 @@ namespace OWC\OpenAgenda\GravityForms\Feed;
 use Exception;
 use GFFeedAddOn;
 use OWC\OpenAgenda\Http\Endpoints\ExportEvent;
+use OWC\OpenAgenda\Traits\ImageProcessingTrait;
 
 class ProcesFeed
 {
+    use ImageProcessingTrait;
+
     protected GFFeedAddOn $GFFeedAddOn;
     protected array $feed;
     protected array $entry;
@@ -42,9 +45,13 @@ class ProcesFeed
 
     public function process()
     {
-        $this->populateSubmissionData();
-        $this->cleanupPossibleRedudantLocationData();
-        $this->exportToOpenAgenda();
+        try {
+            $this->populateSubmissionData();
+            $this->cleanupPossibleRedudantLocationData();
+            $this->exportToOpenAgenda();
+        } catch(Exception $e) {
+            $this->GFFeedAddOn->add_feed_error($e->getMessage(), $this->feed, $this->entry, $this->form);
+        }
     }
 
     protected function populateSubmissionData(): void
@@ -54,8 +61,12 @@ class ProcesFeed
                 $this->submissionData['dates'][0][$name] = $this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID);
             } elseif (str_starts_with($name, 'tax_')) {
                 $this->submissionData[$name] = wp_parse_list($this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID));
+            } elseif ($name === 'thumbnail') {
+                $this->submissionData[$name] = $this->urlToBase64($this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID));
             } elseif (in_array($name, ['media_files', 'images'])) {
-                $this->submissionData[$name] = wp_parse_list($this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID));
+                $this->submissionData[$name] = array_map(function ($value) {
+                    return $this->urlToBase64($value);
+                }, wp_parse_list($this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID)));
             } else {
                 $this->submissionData[$name] = $this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID);
             }
