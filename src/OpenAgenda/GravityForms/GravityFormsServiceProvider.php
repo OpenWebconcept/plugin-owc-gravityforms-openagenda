@@ -29,6 +29,6 @@ class GravityFormsServiceProvider extends ServiceProvider
     public function registerAddOn(): void
     {
         GFForms::include_feed_addon_framework();
-        GFAddOn::register(GravityFormsAddon::class);
+        GFAddOn::register(GravityFormsAddOn::class);
     }
 }

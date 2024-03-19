@@ -8,7 +8,7 @@ use GFFeedAddOn;
 use OWC\OpenAgenda\GravityForms\Feed\FeedSettings;
 use OWC\OpenAgenda\GravityForms\Feed\ProcesFeed;
 
-class GravityFormsAddon extends GFFeedAddOn
+class GravityFormsAddOn extends GFFeedAddOn
 {
     protected $_version = OWC_GF_OPENAGENDA_VERSION;
     protected $_min_gravityforms_version = '2.6';
