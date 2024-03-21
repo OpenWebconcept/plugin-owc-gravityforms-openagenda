@@ -159,7 +159,7 @@ class FeedSettings
                                 'required' => false,
                             ],
                             [
-                                'name' => 'event_website_url',
+                                'name' => 'website_url',
                                 'label' => esc_html__('Website evenement', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'website',
                                 'required' => false,
