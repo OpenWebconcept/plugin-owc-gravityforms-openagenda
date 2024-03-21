@@ -135,6 +135,12 @@ class FeedSettings
                                 'required' => false,
                             ],
                             [
+                                'name' => 'accessibility',
+                                'label' => esc_html__('Toegankelijkheid', 'owc-gravityforms-openagenda'),
+                                'field_type' => ['text', 'textarea'],
+                                'required' => false,
+                            ],
+                            [
                                 'name' => 'price_type',
                                 'label' => esc_html__('Prijs soort', 'owc-gravityforms-openagenda'),
                                 'field_type' => ['select', 'radio'],
