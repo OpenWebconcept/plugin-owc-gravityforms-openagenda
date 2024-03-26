@@ -116,6 +116,7 @@ class Hooks
         if ('locations' === $restBase) {
             $options = (new GetLocations())->request('GET');
             $options = $options['results'] ?? [];
+            array_unshift($options, ['id' => '', 'title' => 'Selecteer een locatie']); // Prepend blank option.
         }
 
         return ! empty($options) ? $options : [];
