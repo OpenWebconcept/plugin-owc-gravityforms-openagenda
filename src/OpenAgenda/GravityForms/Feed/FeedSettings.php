@@ -81,6 +81,13 @@ class FeedSettings
                                 'required' => false,
                             ],
                             [
+                                'name' => 'recurring_description',
+                                'label' => esc_html__('Terugkerend evenement', 'owc-gravityforms-openagenda'),
+                                'required' => false,
+                                'field_type' => ['text', 'textarea'],
+                                'required' => false,
+                            ],
+                            [
                                 'name' => 'organizer',
                                 'label' => esc_html__('Organisator', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'text',
