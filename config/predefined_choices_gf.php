@@ -53,4 +53,15 @@ return [
         'Verplicht|mandatory',
         'Optioneel|optional',
     ],
+    'OpenAgenda: Taal evenement' => [
+        'English (United States)|en_US',
+        'Dutch (Netherlands)|nl_NL',
+        'French (France)|fr_FR',
+        'German (Germany)|de_DE',
+        'Italian (Italy)|it_IT',
+
+        'Niet vereist|not_required',
+        'Verplicht|mandatory',
+        'Optioneel|optional',
+    ],
 ];

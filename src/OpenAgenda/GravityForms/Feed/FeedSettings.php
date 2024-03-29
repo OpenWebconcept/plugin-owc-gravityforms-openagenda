@@ -118,6 +118,12 @@ class FeedSettings
                                 'required' => false,
                             ],
                             [
+                                'name' => 'language',
+                                'label' => esc_html__('Taal', 'owc-gravityforms-openagenda'),
+                                'field_type' => ['select'],
+                                'required' => false,
+                            ],
+                            [
                                 'name' => 'location_description',
                                 'label' => esc_html__('Locatie omschrijving', 'owc-gravityforms-openagenda'),
                                 'field_type' => ['text', 'address'],
