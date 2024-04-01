@@ -6,7 +6,7 @@ declare(strict_types=1);
  * Plugin Name:       Yard | GravityForms OpenAgenda
  * Plugin URI:        https://www.openwebconcept.nl/
  * Description:       This plug-in enables users to submit events via an embedded Gravity Forms form. After submitting, an event is created and is also publicly visible using the REST API.
- * Version:           0.0.6
+ * Version:           0.0.7
  * Author:            Yard | Digital Agency
  * Author URI:        https://www.yard.nl/
  * License:           EUPL-1.2
@@ -25,7 +25,7 @@ if (! defined('WPINC')) {
 /**
  * Some necessary constants.
  */
-define('OWC_GF_OPENAGENDA_VERSION', '0.0.6');
+define('OWC_GF_OPENAGENDA_VERSION', '0.0.7');
 define('OWC_GF_OPENAGENDA_DIR', basename(__DIR__));
 define('OWC_GF_OPENAGENDA_ROOT_PATH', __DIR__);
 define('OWC_GF_OPENAGENDA_PLUGIN_SLUG', 'owc-gravityforms-openagenda');

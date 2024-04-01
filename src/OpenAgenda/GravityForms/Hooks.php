@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace OWC\OpenAgenda\GravityForms;
 
 use Exception;
-use function OWC\OpenAgenda\Foundation\resolve;
-use function OWC\OpenAgenda\Foundation\view;
+use GF_Field;
 use OWC\OpenAgenda\Http\Endpoints\GetLocations;
 use OWC\OpenAgenda\Http\Endpoints\GetTaxonomyTerms;
+use function OWC\OpenAgenda\Foundation\resolve;
+use function OWC\OpenAgenda\Foundation\view;
 
 class Hooks
 {
@@ -59,21 +60,28 @@ class Hooks
         return $tooltips;
     }
 
-    public function populateCheckboxes(array $form)
+    public function populateCheckboxes(array $form): array
     {
         foreach ($form['fields'] as &$field) {
-            if (! in_array($field->type, self::ALLOWED_FIELD_TYPES)) {
+            if (! in_array($field->type, self::ALLOWED_FIELD_TYPES) || empty($field->field_populate_external_option)) {
                 continue;
             }
 
             try {
                 $choices = $this->prepareFieldOptions($field->field_populate_external_option);
-            } catch (Exception $e) {
 
+                if (empty($choices)) {
+                    throw new Exception('Unable to prepare field options.');
+                }
+            } catch (Exception $e) {
                 continue;
             }
 
-            $field->choices = $choices ? $choices : $field->choices;
+            $field->choices = $choices;
+
+            if ($field->type === 'checkbox') {
+                $field->inputs = $this->formatCheckboxInputIDs($field);
+            }
         }
 
         return $form;
@@ -97,16 +105,12 @@ class Hooks
             $choices = [];
         }
 
-        if (empty($choices)) {
-            return [];
-        }
-
         return $choices;
     }
 
     protected function getFieldOptionsTax(string $restBase): array
     {
-        $options = (new GetTaxonomyTerms())->setRestBase($restBase)->request('GET');
+        $options = (new GetTaxonomyTerms())->setRestBase($restBase)->appendParametersToURL(['per_page' => 25, 'orderby' => 'id'])->request('GET');
 
         return ! empty($options) ? $options : [];
     }
@@ -124,10 +128,6 @@ class Hooks
 
     protected function formatTaxOptions(array $options): array
     {
-        if (empty($options)) {
-            return [];
-        }
-
         $choices = [];
 
         foreach ($options as $option) {
@@ -139,10 +139,6 @@ class Hooks
 
     protected function formatPostOptions(array $options): array
     {
-        if (empty($options)) {
-            return [];
-        }
-
         $choices = [];
 
         foreach ($options as $option) {
@@ -150,5 +146,29 @@ class Hooks
         }
 
         return $choices;
+    }
+
+    /**
+     * Checkbox fields which are custom populated needs the input properties to be formatted correctly.
+     * This is done based on the choices property of the checkbox field.
+     */
+    protected function formatCheckboxInputIDs(GF_Field $field): array
+    {
+        $start = 1;
+
+        return array_map(function ($item) use ($field, &$start) {
+            // Skipping index that are multiples of 10 (multiples of 10 create problems as the input IDs)
+            if ($start % 10 === 0) {
+                $start++;
+            }
+
+            $inputId = sprintf('%d.%d', $field->id, $start);
+            $start++;
+
+            return [
+                'id' => $inputId,
+                'label' => $item['text'],
+            ];
+        }, $field->choices);
     }
 }
