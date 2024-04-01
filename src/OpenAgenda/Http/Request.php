@@ -7,9 +7,9 @@ namespace OWC\OpenAgenda\Http;
 use DateTime;
 use DateTimeZone;
 use Exception;
-use function OWC\OpenAgenda\Foundation\resolve;
 use OWC\OpenAgenda\Http\Handlers\Stack;
 use OWC\OpenAgenda\Resolvers\ContainerResolver;
+use function OWC\OpenAgenda\Foundation\resolve;
 
 class Request
 {
@@ -37,6 +37,13 @@ class Request
     public function setRestBase(string $value): self
     {
         $this->restBase = $value;
+
+        return $this;
+    }
+
+    public function appendParametersToURL(array $parameters): self
+    {
+        $this->restBase .= '?' . http_build_query($parameters);
 
         return $this;
     }
