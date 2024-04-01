@@ -60,7 +60,7 @@ class Hooks
         return $tooltips;
     }
 
-    public function populateCheckboxes(array $form): array
+    public function populateExternalOptionsFields(array $form): array
     {
         foreach ($form['fields'] as &$field) {
             if (! in_array($field->type, self::ALLOWED_FIELD_TYPES) || empty($field->field_populate_external_option)) {

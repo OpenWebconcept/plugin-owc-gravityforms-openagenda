@@ -16,10 +16,13 @@ class GravityFormsServiceProvider extends ServiceProvider
 
         $this->plugin->loader->addAction('gform_loaded', $this, 'registerAddOn');
         $this->plugin->loader->addFilter('gform_predefined_choices', $hooks, 'addBulkChoices');
-        $this->plugin->loader->addFilter('gform_pre_render', $hooks, 'populateCheckboxes');
-        $this->plugin->loader->addFilter('gform_pre_validation', $hooks, 'populateCheckboxes');
-        $this->plugin->loader->addFilter('gform_pre_submission_filter', $hooks, 'populateCheckboxes');
-        $this->plugin->loader->addFilter('gform_admin_pre_render', $hooks, 'populateCheckboxes');
+        $this->plugin->loader->addFilter('gform_pre_render', $hooks, 'populateExternalOptionsFields');
+        $this->plugin->loader->addFilter('gform_pre_validation', $hooks, 'populateExternalOptionsFields');
+        $this->plugin->loader->addFilter('gform_pre_submission_filter', $hooks, 'populateExternalOptionsFields');
+
+        if (is_admin()) {
+            $this->plugin->loader->addFilter('gform_admin_pre_render', $hooks, 'populateExternalOptionsFields');
+        }
 
         $this->plugin->loader->addAction('gform_field_advanced_settings', $hooks, 'addExternalOptionsSelect', 10, 2);
         $this->plugin->loader->addAction('gform_editor_js', $hooks, 'addExternalOptionsSelectScript');
