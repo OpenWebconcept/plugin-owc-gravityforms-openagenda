@@ -48,6 +48,7 @@ class ProcesFeed
         try {
             $this->populateSubmissionData();
             $this->cleanupPossibleRedudantLocationData();
+            $this->setDefaultEventLanguage();
             $this->exportToOpenAgenda();
         } catch(Exception $e) {
             $this->GFFeedAddOn->add_feed_error($e->getMessage(), $this->feed, $this->entry, $this->form);
@@ -72,10 +73,12 @@ class ProcesFeed
             }
         }
 
-        // Maybe use array_filter in the future. For now all the field are required otherwise the API will throw errors.
         $this->submissionData = $this->submissionData;
     }
 
+    /**
+     * When an existing location is selected, unset possible redundant location data.
+     */
     protected function cleanupPossibleRedudantLocationData(): void
     {
         if (empty($this->submissionData['location'])) {
@@ -86,6 +89,19 @@ class ProcesFeed
         unset($this->submissionData['location_address']);
         unset($this->submissionData['location_zipcode']);
         unset($this->submissionData['location_city']);
+    }
+
+    /**
+     * Set default language for events if none is provided.
+     * The default language is set to 'nl_NL'.
+     */
+    protected function setDefaultEventLanguage(): void
+    {
+        if (! empty($this->submissionData['language'])) {
+            return;
+        }
+
+        $this->submissionData['language'] = 'nl_NL';
     }
 
     protected function exportToOpenAgenda(): void
