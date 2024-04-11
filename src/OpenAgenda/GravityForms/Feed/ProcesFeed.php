@@ -19,10 +19,7 @@ class ProcesFeed
     protected array $form;
     protected array $settings;
     protected array $fieldMap;
-    protected array $submissionData = [
-        'price_type' => 'fixed',
-        'type' => 'specific',
-    ];
+    protected array $submissionData = [];
 
     public function __construct(GFFeedAddOn $GFFeedAddOn, array $feed, array $entry, array $form)
     {
