@@ -6,10 +6,10 @@ namespace OWC\OpenAgenda\GravityForms;
 
 use Exception;
 use GF_Field;
-use OWC\OpenAgenda\Http\Endpoints\GetLocations;
-use OWC\OpenAgenda\Http\Endpoints\GetTaxonomyTerms;
 use function OWC\OpenAgenda\Foundation\resolve;
 use function OWC\OpenAgenda\Foundation\view;
+use OWC\OpenAgenda\Http\Endpoints\GetLocations;
+use OWC\OpenAgenda\Http\Endpoints\GetTaxonomyTerms;
 
 class Hooks
 {
@@ -38,7 +38,11 @@ class Hooks
             return;
         }
 
-        $taxonomies = (new \OWC\OpenAgenda\Http\Endpoints\GetEventTaxonomies())->request('GET');
+        try {
+            $taxonomies = (new \OWC\OpenAgenda\Http\Endpoints\GetEventTaxonomies())->request('GET');
+        } catch (Exception $e) {
+            $taxonomies = [];
+        }
 
         echo view('partials/gf-advanced-settings-custom-select.php', ['external_options' => array_map(function ($taxonomy) {
             return [
@@ -119,6 +123,7 @@ class Hooks
     {
         if ('locations' === $restBase) {
             $options = (new GetLocations())->request('GET');
+
             $options = $options['results'] ?? [];
             array_unshift($options, ['id' => '', 'title' => 'Selecteer een locatie']); // Prepend blank option.
         }

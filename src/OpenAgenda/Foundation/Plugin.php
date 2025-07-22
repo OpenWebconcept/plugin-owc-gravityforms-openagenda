@@ -55,12 +55,12 @@ class Plugin
             'teams' => function () {
                 $logger = new \Monolog\Logger('microsoft-teams-logger');
 
-                if (true === env('MS_TEAMS_DISABLE_LOGGING_OPEN_AGENDA', true)) {
+                if (true === filter_var($_ENV['MS_TEAMS_DISABLE_LOGGING_OPEN_AGENDA'] ?? true, FILTER_VALIDATE_BOOLEAN)) {
                     return $logger->pushHandler(new \Monolog\Handler\NullHandler());
                 }
 
                 return $logger->pushHandler(new \CMDISP\MonologMicrosoftTeams\TeamsLogHandler(
-                    $_ENV['MS_TEAMS_WEBHOOK'],
+                    $_ENV['MS_TEAMS_WEBHOOK_URL'] ?? '',
                     \Monolog\Logger::INFO,
                     true,
                     new TeamsFormatter()
