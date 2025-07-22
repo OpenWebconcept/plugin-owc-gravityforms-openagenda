@@ -4,13 +4,13 @@ namespace OWC\OpenAgenda\Traits;
 
 trait ImageProcessingTrait
 {
-    protected function urlToBase64($url): string
+    protected function urlToBase64(string $url = ''): string
     {
-        if (empty($url)) {
+        if ('' === $url) {
             return '';
         }
 
-        $contents = file_get_contents($url, false, $this->streamContext());
+        $contents = @file_get_contents($url, false, $this->streamContext());
 
         return $contents ? base64_encode($contents) : '';
     }

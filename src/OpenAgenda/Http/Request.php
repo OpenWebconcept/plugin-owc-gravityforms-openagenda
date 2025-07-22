@@ -73,9 +73,9 @@ class Request
             $requestArgs['body'] = wp_json_encode($args);
         }
 
-        $response = \wp_safe_remote_request($this->makeURL(), $requestArgs);
+        $response = wp_safe_remote_request($this->makeURL(), $requestArgs);
 
-        if (\is_wp_error($response)) {
+        if (is_wp_error($response)) {
             throw new Exception($response->get_error_message(), 400);
         }
 

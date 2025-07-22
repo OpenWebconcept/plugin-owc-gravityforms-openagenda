@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace OWC\OpenAgenda\GravityForms\Feed;
 
+use Exception;
+
 class FeedSettings
 {
     public static function pluginSettingsField(): array
@@ -205,26 +207,82 @@ class FeedSettings
                                 'name' => 'start_date',
                                 'label' => esc_html__('Startdatum', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'date',
-                                'required' => false,
+                                'required' => true,
                             ],
                             [
                                 'name' => 'end_date',
                                 'label' => esc_html__('Einddatum', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'date',
-                                'required' => false,
+                                'required' => true,
                             ],
                             [
                                 'name' => 'start_time',
                                 'label' => esc_html__('Starttijd', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'time',
-                                'required' => false,
+                                'required' => true,
                             ],
                             [
                                 'name' => 'end_time',
                                 'label' => esc_html__('Eindtijd', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'time',
+                                'required' => true,
+                            ],
+                            [
+                                'name' => 'specific_dates_and_times',
+                                'label' => esc_html__('Specifieke data en tijden', 'owc-gravityforms-openagenda'),
+                                'field_type' => 'owc-date-time-repeater',
                                 'required' => false,
                             ],
+                            // Fields for 'dates_types' => 'specific'
+                            [
+                                'name'        => 'dates_every_year',
+                                'label'       => esc_html__('Jaarlijks herhalen?', 'owc-gravityforms-openagenda'),
+                                'field_type'  => ['select', 'radio'],
+                                'required'    => false,
+                            ],
+                            // End of 'specific' fields
+
+                            // Fields for 'dates_types' => 'complex'
+                            [
+                                'name'        => 'weekdays',
+                                'label'       => esc_html__('Weekdagen', 'owc-gravityforms-openagenda'),
+                                'field_type'  => 'multiselect',
+                                'required'    => false,
+                            ],
+                            [
+                                'name'        => 'weekday_times',
+                                'label'       => esc_html__('Weekdagen en tijden', 'owc-gravityforms-openagenda'),
+                                'field_type'  => ['owc-weekday-times-repeater'],
+                                'required'    => false,
+                            ],
+                            [
+                                'name'        => 'months',
+                                'label'       => esc_html__('Maanden', 'owc-gravityforms-openagenda'),
+                                'field_type'  => 'multiselect',
+                                'required'    => false,
+                            ],
+                            [
+                                'name'        => 'weekday_occurrence',
+                                'label'       => esc_html__('Weekdagen (herhaling)', 'owc-gravityforms-openagenda'),
+                                'field_type'  => ['select', 'radio'],
+                                'required'    => false,
+                            ],
+                            [
+                                'name'        => 'dates_recurring_description',
+                                'label'       => esc_html__('Terugkerende datum omschrijving', 'owc-gravityforms-openagenda'),
+                                'field_type'  => ['text', 'textarea'],
+                                'required'    => false,
+                            ],
+                            // End of 'complex' fields
+
+                            // Fields common to all 'dates_types' values
+                            [
+                                'name'        => 'repeating_exclude_date',
+                                'label'       => esc_html__('Uitsluiten van herhaling', 'owc-gravityforms-openagenda'),
+                                'field_type'  => ['owc-date-repeater'],
+                                'required'    => false,
+                            ],
+                            // End of 'dates_types' fields
                             [
                                 'name' => 'media_files',
                                 'label' => esc_html__('Bestanden', 'owc-gravityforms-openagenda'),
@@ -256,7 +314,12 @@ class FeedSettings
     private static function getEventTaxonomies(): array
     {
         $eventTaxonomies = [];
-        $taxonomies = (new \OWC\OpenAgenda\Http\Endpoints\GetEventTaxonomies())->request('GET');
+
+        try {
+            $taxonomies = (new \OWC\OpenAgenda\Http\Endpoints\GetEventTaxonomies())->request('GET');
+        } catch (Exception $e) {
+            return [];
+        }
 
         foreach ($taxonomies as $taxonomy) {
             $eventTaxonomies[] = [
