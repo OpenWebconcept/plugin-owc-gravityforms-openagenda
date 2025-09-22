@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace OWC\OpenAgenda\Http;
 
 use Exception;
+use Throwable;
 
 class RequestError extends Exception
 {
@@ -14,9 +15,9 @@ class RequestError extends Exception
     {
         try {
             $json = $response->getParsedJson();
-            $message = sprintf('Something went wrong while requesting %s. Error: %s', $response->getRequestedURL(), $json['message']);
+            $message = sprintf('Something went wrong while requesting %s. Error: %s', $response->getRequestedURL(), $json['message'] ?? 'No error message returned.');
             $status = $response->getResponseCode();
-        } catch (\Throwable $e) {
+        } catch (Throwable $e) {
             $message = 'A request error occurred. Additionally, no error message could be retrieved.';
             $status = 0;
         }

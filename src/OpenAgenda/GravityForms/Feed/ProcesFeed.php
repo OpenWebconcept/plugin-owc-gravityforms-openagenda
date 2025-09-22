@@ -6,16 +6,13 @@ namespace OWC\OpenAgenda\GravityForms\Feed;
 
 use Exception;
 use GFFeedAddOn;
+use OWC\OpenAgenda\GravityForms\Feed\Services\PeriodFieldService;
 use OWC\OpenAgenda\Http\Endpoints\ExportEvent;
 use OWC\OpenAgenda\Traits\ImageProcessingTrait;
 
 class ProcesFeed
 {
     use ImageProcessingTrait;
-
-    private const VALID_WEEKDAYS = [
-        'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday',
-    ];
 
     protected GFFeedAddOn $GFFeedAddOn;
     protected array $feed;
@@ -62,29 +59,13 @@ class ProcesFeed
             $value = $this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID);
 
             switch (true) {
-                case in_array($name, ['start_date', 'end_date', 'start_time', 'end_time'], true) && ! empty($value):
-                    $this->submissionData['dates'][0][$name] = $value;
-
-                    break;
-                case $name === 'weekday_occurrence':
-                    $this->submissionData['dates'][0][$name] = $value;
-
-                    break;
-
                 case $name === 'repeating_exclude_date':
-                    // Handle custom DateRepeater GF field from the project which uses this plug-in.
-                    $this->submissionData[$name] = $this->handleExcludeDates((string) $fieldID);
+                    $this->submissionData[$name] = $this->handleExcludedDates((string) $fieldID);
 
                     break;
 
-                case $name === 'weekday_times':
-                    // Handle custom WeekdayTimesRepeaterField GF field from the project which uses this plug-in.
-                    $this->handleWeekdayTimes((string) $fieldID);
-
-                    break;
-
-                case in_array($name, ['weekdays', 'months'], true):
-                    $this->submissionData['dates'][0][$name] = wp_parse_list($value);
+                case $name === 'period-weekdays':
+                    $this->handlePeriods((string) $fieldID);
 
                     break;
 
@@ -109,6 +90,10 @@ class ProcesFeed
                     $this->handleDatesAndTimes((string) $fieldID);
 
                     break;
+                case $name === 'dates_type':
+                    $this->submissionData[$name] = 'specific'; // Force 'specific', requirements have changed.
+
+                    break;
                 default:
                     $this->submissionData[$name] = $value;
             }
@@ -116,9 +101,9 @@ class ProcesFeed
     }
 
     /**
-     * Handle the exclude dates from the DateRepeater field.
+     * Handle the excluded dates from the custom DateRepeater field.
      */
-    protected function handleExcludeDates(string $fieldID): array
+    protected function handleExcludedDates(string $fieldID): array
     {
         $values = rgar($this->entry, $fieldID);
 
@@ -144,37 +129,23 @@ class ProcesFeed
     }
 
     /**
-     * Handle the weekday times from the WeekdayTimesField.
-     * This field is used for overwriting the start and end times for specific weekdays.
+     * Handle the periods from the custom PeriodField field.
      */
-    protected function handleWeekdayTimes(string $fieldID): void
+    protected function handlePeriods(string $fieldID): void
     {
         $values = rgar($this->entry, $fieldID);
 
-        if (! is_array($values) || 1 > count($values)) {
+        if (! is_array($values) || [] === $values) {
             return;
         }
 
-        foreach (array_values($values) as $value) {
-            $ordered = array_values($value);
+        $allDates = [];
 
-            [$weekday, $startTime, $endTime] = $ordered + [null, null, null];
-
-            if (! is_string($weekday) || ! is_string($startTime) || ! is_string($endTime)) {
-                continue;
-            }
-
-            if (! in_array($weekday, self::VALID_WEEKDAYS, true)) {
-                continue;
-            }
-
-            if ('' === $weekday || '' === $startTime || '' === $endTime) {
-                continue;
-            }
-
-            $this->submissionData['dates'][0]["start_time_$weekday"] = $startTime;
-            $this->submissionData['dates'][0]["end_time_$weekday"] = $endTime;
+        foreach (array_values($values) as $period) {
+            $allDates = array_merge($allDates, (new PeriodFieldService())->handlePeriod($period));
         }
+
+        $this->submissionData['dates'] = array_merge($this->submissionData['dates'] ?? [], $allDates);
     }
 
     /**

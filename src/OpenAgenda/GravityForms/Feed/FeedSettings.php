@@ -204,30 +204,6 @@ class FeedSettings
                                 'required' => false,
                             ],
                             [
-                                'name' => 'start_date',
-                                'label' => esc_html__('Startdatum', 'owc-gravityforms-openagenda'),
-                                'field_type' => 'date',
-                                'required' => true,
-                            ],
-                            [
-                                'name' => 'end_date',
-                                'label' => esc_html__('Einddatum', 'owc-gravityforms-openagenda'),
-                                'field_type' => 'date',
-                                'required' => true,
-                            ],
-                            [
-                                'name' => 'start_time',
-                                'label' => esc_html__('Starttijd', 'owc-gravityforms-openagenda'),
-                                'field_type' => 'time',
-                                'required' => true,
-                            ],
-                            [
-                                'name' => 'end_time',
-                                'label' => esc_html__('Eindtijd', 'owc-gravityforms-openagenda'),
-                                'field_type' => 'time',
-                                'required' => true,
-                            ],
-                            [
                                 'name' => 'specific_dates_and_times',
                                 'label' => esc_html__('Specifieke data en tijden', 'owc-gravityforms-openagenda'),
                                 'field_type' => 'owc-date-time-repeater',
@@ -244,27 +220,9 @@ class FeedSettings
 
                             // Fields for 'dates_types' => 'complex'
                             [
-                                'name'        => 'weekdays',
-                                'label'       => esc_html__('Weekdagen', 'owc-gravityforms-openagenda'),
-                                'field_type'  => 'multiselect',
-                                'required'    => false,
-                            ],
-                            [
-                                'name'        => 'weekday_times',
-                                'label'       => esc_html__('Weekdagen en tijden', 'owc-gravityforms-openagenda'),
-                                'field_type'  => ['owc-weekday-times-repeater'],
-                                'required'    => false,
-                            ],
-                            [
-                                'name'        => 'months',
-                                'label'       => esc_html__('Maanden', 'owc-gravityforms-openagenda'),
-                                'field_type'  => 'multiselect',
-                                'required'    => false,
-                            ],
-                            [
-                                'name'        => 'weekday_occurrence',
-                                'label'       => esc_html__('Weekdagen (herhaling)', 'owc-gravityforms-openagenda'),
-                                'field_type'  => ['select', 'radio'],
+                                'name'        => 'period-weekdays',
+                                'label'       => esc_html__('Weekdagen en tijden (periode)', 'owc-gravityforms-openagenda'),
+                                'field_type'  => ['owc-period-repeater'],
                                 'required'    => false,
                             ],
                             [
