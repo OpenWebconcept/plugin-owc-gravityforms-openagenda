@@ -59,12 +59,12 @@ class ProcesFeed
             $value = $this->GFFeedAddOn->get_field_value($this->form, $this->entry, $fieldID);
 
             switch (true) {
-                case $name === 'repeating_exclude_date':
+                case 'repeating_exclude_date' === $name:
                     $this->submissionData[$name] = $this->handleExcludedDates((string) $fieldID);
 
                     break;
 
-                case $name === 'period-weekdays':
+                case 'period-weekdays' === $name:
                     $this->handlePeriods((string) $fieldID);
 
                     break;
@@ -74,7 +74,7 @@ class ProcesFeed
 
                     break;
 
-                case $name === 'thumbnail':
+                case 'thumbnail' === $name:
                     $this->submissionData[$name] = $this->urlToBase64($value);
 
                     break;
@@ -86,11 +86,11 @@ class ProcesFeed
 
                     break;
 
-                case $name === 'specific_dates_and_times':
+                case 'specific_dates_and_times' === $name:
                     $this->handleDatesAndTimes((string) $fieldID);
 
                     break;
-                case $name === 'dates_type':
+                case 'dates_type' === $name:
                     $this->submissionData[$name] = 'specific'; // Force 'specific', requirements have changed.
 
                     break;

@@ -21,7 +21,7 @@ trait ImageProcessingTrait
      */
     public function streamContext()
     {
-        if (($_ENV['APP_ENV'] ?? '') !== 'development') {
+        if ('development' !== ($_ENV['APP_ENV'] ?? '')) {
             return null;
         }
 

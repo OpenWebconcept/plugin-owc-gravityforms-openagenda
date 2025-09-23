@@ -81,8 +81,8 @@ class PeriodFieldService
     {
         $out = [
             'start_date' => $row[self::PERIOD_START_DATE_FIELD_ID] ?? '',
-            'end_date'   => $row[self::PERIOD_END_DATE_FIELD_ID] ?? '',
-            'days'       => [],
+            'end_date' => $row[self::PERIOD_END_DATE_FIELD_ID] ?? '',
+            'days' => [],
         ];
 
         foreach (self::DAYS as $dayKey => $baseId) {
@@ -91,12 +91,12 @@ class PeriodFieldService
             $endId = $baseId + 3;
 
             // Retrieve checkbox value: GF stores it as "{$checkboxId}.1"
-            $checked = isset($row["{$checkboxId}.1"]) && $row["{$checkboxId}.1"] === '1';
+            $checked = isset($row["{$checkboxId}.1"]) && '1' === $row["{$checkboxId}.1"];
 
             $out['days'][$dayKey] = [
                 'checked' => $checked ? 1 : 0,
-                'start_time'   => $row[$startId] ?? '',
-                'end_time'     => $row[$endId]   ?? '',
+                'start_time' => $row[$startId] ?? '',
+                'end_time' => $row[$endId] ?? '',
             ];
         }
 
@@ -105,7 +105,7 @@ class PeriodFieldService
 
     private function dayConfigIsValid(array $dayConfig): bool
     {
-        return !empty($dayConfig['checked'])
+        return ! empty($dayConfig['checked'])
             && is_string($dayConfig['start_time']) && trim($dayConfig['start_time']) !== ''
             && is_string($dayConfig['end_time']) && trim($dayConfig['end_time']) !== '';
     }
@@ -123,9 +123,9 @@ class PeriodFieldService
     {
         return [
             'start_date' => $date->format('d-m-Y'),
-            'end_date'   => $date->format('d-m-Y'),
+            'end_date' => $date->format('d-m-Y'),
             'start_time' => $dayConfig['start_time'],
-            'end_time'   => $dayConfig['end_time'],
+            'end_time' => $dayConfig['end_time'],
         ];
     }
 }

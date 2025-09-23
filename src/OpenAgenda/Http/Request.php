@@ -7,9 +7,10 @@ namespace OWC\OpenAgenda\Http;
 use DateTime;
 use DateTimeZone;
 use Exception;
-use OWC\OpenAgenda\Http\Handlers\Stack;
-use OWC\OpenAgenda\Resolvers\ContainerResolver;
 use function OWC\OpenAgenda\Foundation\resolve;
+use OWC\OpenAgenda\Http\Handlers\Stack;
+
+use OWC\OpenAgenda\Resolvers\ContainerResolver;
 
 class Request
 {

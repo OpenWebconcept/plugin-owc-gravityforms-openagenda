@@ -83,7 +83,7 @@ class Hooks
 
             $field->choices = $choices;
 
-            if ($field->type === 'checkbox') {
+            if ('checkbox' === $field->type) {
                 $field->inputs = $this->formatCheckboxInputIDs($field);
             }
         }

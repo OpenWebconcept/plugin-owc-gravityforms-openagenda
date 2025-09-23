@@ -211,34 +211,34 @@ class FeedSettings
                             ],
                             // Fields for 'dates_types' => 'specific'
                             [
-                                'name'        => 'dates_every_year',
-                                'label'       => esc_html__('Jaarlijks herhalen?', 'owc-gravityforms-openagenda'),
-                                'field_type'  => ['select', 'radio'],
-                                'required'    => false,
+                                'name' => 'dates_every_year',
+                                'label' => esc_html__('Jaarlijks herhalen?', 'owc-gravityforms-openagenda'),
+                                'field_type' => ['select', 'radio'],
+                                'required' => false,
                             ],
                             // End of 'specific' fields
 
                             // Fields for 'dates_types' => 'complex'
                             [
-                                'name'        => 'period-weekdays',
-                                'label'       => esc_html__('Weekdagen en tijden (periode)', 'owc-gravityforms-openagenda'),
-                                'field_type'  => ['owc-period-repeater'],
-                                'required'    => false,
+                                'name' => 'period-weekdays',
+                                'label' => esc_html__('Weekdagen en tijden (periode)', 'owc-gravityforms-openagenda'),
+                                'field_type' => ['owc-period-repeater'],
+                                'required' => false,
                             ],
                             [
-                                'name'        => 'dates_recurring_description',
-                                'label'       => esc_html__('Terugkerende datum omschrijving', 'owc-gravityforms-openagenda'),
-                                'field_type'  => ['text', 'textarea'],
-                                'required'    => false,
+                                'name' => 'dates_recurring_description',
+                                'label' => esc_html__('Terugkerende datum omschrijving', 'owc-gravityforms-openagenda'),
+                                'field_type' => ['text', 'textarea'],
+                                'required' => false,
                             ],
                             // End of 'complex' fields
 
                             // Fields common to all 'dates_types' values
                             [
-                                'name'        => 'repeating_exclude_date',
-                                'label'       => esc_html__('Uitsluiten van herhaling', 'owc-gravityforms-openagenda'),
-                                'field_type'  => ['owc-date-repeater'],
-                                'required'    => false,
+                                'name' => 'repeating_exclude_date',
+                                'label' => esc_html__('Uitsluiten van herhaling', 'owc-gravityforms-openagenda'),
+                                'field_type' => ['owc-date-repeater'],
+                                'required' => false,
                             ],
                             // End of 'dates_types' fields
                             [

@@ -7,6 +7,8 @@ namespace OWC\OpenAgenda\Foundation;
 use CMDISP\MonologMicrosoftTeams\TeamsFormatter;
 use DI\Container;
 use DI\ContainerBuilder;
+use function DI\create;
+
 use Exception;
 
 class Plugin
@@ -15,8 +17,11 @@ class Plugin
     public const VERSION = \OWC_GF_OPENAGENDA_VERSION;
 
     public Config $config;
-    public Loader $loader;
     protected Container $container;
+
+    /**
+    * @var Plugin
+    */
     protected static $instance;
 
     protected string $rootPath;
@@ -24,9 +29,8 @@ class Plugin
     public function __construct(string $rootPath)
     {
         $this->rootPath = $rootPath;
-        load_plugin_textdomain($this->getName(), false, $this->getName() . '/languages/');
-
         require_once __DIR__ . '/Helpers.php';
+
         $this->buildContainer();
     }
 
@@ -48,10 +52,7 @@ class Plugin
         $builder->addDefinitions([
             'app' => $this,
             self::class => $this,
-            'config' => function () {
-                return new Config($this->rootPath . '/config');
-            },
-            'loader' => Loader::getInstance(),
+            'config' => create(Config::class)->constructor($this->rootPath . '/config'),
             'teams' => function () {
                 $logger = new \Monolog\Logger('microsoft-teams-logger');
 
@@ -82,17 +83,6 @@ class Plugin
         $this->config = resolve('config');
         $this->config->boot();
 
-        $this->loader = resolve('loader');
-
-        $dependencyChecker = new DependencyChecker($this->config->get('core.dependencies'));
-
-        if ($dependencyChecker->failed()) {
-            $dependencyChecker->notify();
-            \deactivate_plugins(plugin_basename($this->rootPath . '/' . $this->getName() . '.php'));
-
-            return false;
-        }
-
         // Set up service providers
         $this->callServiceProviders('register');
 
@@ -101,12 +91,18 @@ class Plugin
             $this->callServiceProviders('boot', 'admin');
         }
 
+        $this->loadTextDomain();
+
         $this->callServiceProviders('boot');
 
         $this->config->setProtectedNodes(['core']);
-        $this->loader->register();
 
         return true;
+    }
+
+    public function loadTextDomain(): void
+    {
+        load_plugin_textdomain($this->getName(), false, $this->getName() . '/languages/');
     }
 
     /**
