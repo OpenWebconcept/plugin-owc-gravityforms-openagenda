@@ -9,12 +9,12 @@ use DateTimeZone;
 use Exception;
 use function OWC\OpenAgenda\Foundation\resolve;
 use OWC\OpenAgenda\Http\Handlers\Stack;
-
 use OWC\OpenAgenda\Resolvers\ContainerResolver;
 
 class Request
 {
     public const ENDPOINT = '';
+    public const TRANSIENT_LIFE_TIME = 4 * 3600; // 4 hours
 
     protected string $restBase = '';
 
@@ -64,6 +64,14 @@ class Request
 
     protected function doRequest(string $method = 'GET', array $args = []): Response
     {
+        $url = $this->makeURL();
+
+        $response = get_transient(md5($url));
+
+        if ($response instanceof Response && 'GET' === $method) {
+            return $this->handleResponse($response);
+        }
+
         $requestArgs = [
             'timeout' => 10,
             'method' => $method,
@@ -74,7 +82,7 @@ class Request
             $requestArgs['body'] = wp_json_encode($args);
         }
 
-        $response = wp_safe_remote_request($this->makeURL(), $requestArgs);
+        $response = wp_safe_remote_request($url, $requestArgs);
 
         if (is_wp_error($response)) {
             throw new Exception($response->get_error_message(), 400);
@@ -82,12 +90,18 @@ class Request
 
         $response = new Response(
             isset($response['headers']) ? $response['headers']->getAll() : [],
-            $this->makeURL(),
+            $url,
             $response['response'],
             $response['body']
         );
 
-        return $this->handleResponse($response);
+        $response = $this->handleResponse($response);
+
+        if ('GET' === $method) {
+            set_transient(md5($url), $response, static::TRANSIENT_LIFE_TIME);
+        }
+
+        return $response;
     }
 
     protected function getHeaders(): array
