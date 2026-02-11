@@ -122,13 +122,11 @@ class Hooks
     protected function getFieldOptionsPost(string $restBase): array
     {
         if ('locations' === $restBase) {
-            $options = (new GetLocations())->request('GET');
-
-            $options = $options['results'] ?? [];
-            array_unshift($options, ['id' => '', 'title' => 'Selecteer een locatie']); // Prepend blank option.
+            $locations = (new GetLocations())->list();
+            array_unshift($locations, ['id' => '', 'title' => 'Selecteer een locatie']); // Prepend blank option.
         }
 
-        return ! empty($options) ? $options : [];
+        return ! empty($locations) ? $locations : [];
     }
 
     protected function formatTaxOptions(array $options): array
