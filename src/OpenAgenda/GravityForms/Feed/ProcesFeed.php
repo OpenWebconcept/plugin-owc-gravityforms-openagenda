@@ -223,6 +223,12 @@ class ProcesFeed
             return;
         }
 
-        $this->GFFeedAddOn->add_note($this->entry['id'], $result['message']);
+        $message = $result['message'] ?? '';
+
+        if (! is_string($message) || '' === trim($message)) {
+            $message = json_encode($result, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        }
+
+        $this->GFFeedAddOn->add_note($this->entry['id'], $message);
     }
 }
