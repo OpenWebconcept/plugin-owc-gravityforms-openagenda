@@ -15,7 +15,12 @@ class RequestError extends Exception
     {
         try {
             $json = $response->getParsedJson();
-            $message = sprintf('Something went wrong while requesting %s. Error: %s', $response->getRequestedURL(), $json['message'] ?? 'No error message returned.');
+            $errorDetail = $json['message'] ?? $response->getResponseMessage() ?? $response->getBody();
+            $message = sprintf(
+                'Something went wrong while requesting %s. Error: %s',
+                $response->getRequestedURL(),
+                $errorDetail ?: 'No error message returned.'
+            );
             $status = $response->getResponseCode();
         } catch (Throwable $e) {
             $message = 'A request error occurred. Additionally, no error message could be retrieved.';
