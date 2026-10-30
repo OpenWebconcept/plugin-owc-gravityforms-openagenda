@@ -58,7 +58,7 @@ class PeriodFieldService
     }
 
     /**
-     * @since NEXT
+     * @since 1.0.2
      */
     private function handleDays(array $days, DateTimeImmutable $startDate, DateTimeImmutable $endDate): array
     {
@@ -126,7 +126,7 @@ class PeriodFieldService
     }
 
     /**
-     * @since NEXT
+     * @since 1.0.2
      */
     private function timeIsValid(mixed $time): bool
     {
@@ -151,7 +151,7 @@ class PeriodFieldService
     }
 
     /**
-     * @since NEXT
+     * @since 1.0.2
      */
     private function buildDateConfig(DateTimeImmutable $date, array $dayConfig): array
     {

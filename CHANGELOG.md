@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## [v1.0.2]- 2026-10-30
+
+- Fix: export period date range when no weekdays are selected
+
 ## [v1.0.1] - 2026-05-20
 
 - Added: RequestError returns meaningful error message by chaining fallbacks
