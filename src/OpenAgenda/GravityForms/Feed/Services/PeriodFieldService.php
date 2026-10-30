@@ -34,25 +34,37 @@ class PeriodFieldService
         'sun' => 7,
     ];
 
-    public function handlePeriod(array $period): array
-    {
-        return $this->handleDays($this->normalizeRow($period));
-    }
-
     /**
      * @throws Exception
      */
-    private function handleDays(array $period): array
+    public function handlePeriod(array $period): array
+    {
+        $period = $this->normalizeRow($period);
+
+        if ('' === trim($period['start_date'])) {
+            return [];
+        }
+
+        $startDate = new DateTimeImmutable($period['start_date']);
+        $endDate = '' !== trim($period['end_date']) ? new DateTimeImmutable($period['end_date']) : $startDate;
+        $days = array_filter($period['days'], fn (array $dayConfig) => $this->dayConfigIsValid($dayConfig));
+
+        // Without selected days the period itself is exported as a single date range.
+        if ([] === $days) {
+            return [$this->buildPeriodConfig($startDate, $endDate)];
+        }
+
+        return $this->handleDays($days, $startDate, $endDate);
+    }
+
+    /**
+     * @since NEXT
+     */
+    private function handleDays(array $days, DateTimeImmutable $startDate, DateTimeImmutable $endDate): array
     {
         $allDates = [];
-        $startDate = new DateTimeImmutable($period['start_date']);
-        $endDate = new DateTimeImmutable($period['end_date']);
 
-        foreach ($period['days'] as $dayKey => $dayConfig) {
-            if (! $this->dayConfigIsValid($dayConfig)) {
-                continue; // Remove invalid days
-            }
-
+        foreach ($days as $dayKey => $dayConfig) {
             $targetWeekday = self::DAY_MAP[$dayKey] ?? null;
 
             if (! is_int($targetWeekday)) {
@@ -80,8 +92,8 @@ class PeriodFieldService
     private function normalizeRow(array $row): array
     {
         $out = [
-            'start_date' => $row[self::PERIOD_START_DATE_FIELD_ID] ?? '',
-            'end_date' => $row[self::PERIOD_END_DATE_FIELD_ID] ?? '',
+            'start_date' => (string) ($row[self::PERIOD_START_DATE_FIELD_ID] ?? ''),
+            'end_date' => (string) ($row[self::PERIOD_END_DATE_FIELD_ID] ?? ''),
             'days' => [],
         ];
 
@@ -95,19 +107,30 @@ class PeriodFieldService
 
             $out['days'][$dayKey] = [
                 'checked' => $checked ? 1 : 0,
-                'start_time' => $row[$startId] ?? '',
-                'end_time' => $row[$endId] ?? '',
+                'start_time' => (string) ($row[$startId] ?? ''),
+                'end_time' => (string) ($row[$endId] ?? ''),
             ];
         }
 
         return $out;
     }
 
+    /**
+     * A day is valid when checked and both start and end times are valid time strings.
+     */
     private function dayConfigIsValid(array $dayConfig): bool
     {
         return ! empty($dayConfig['checked'])
-            && is_string($dayConfig['start_time']) && trim($dayConfig['start_time']) !== ''
-            && is_string($dayConfig['end_time']) && trim($dayConfig['end_time']) !== '';
+            && $this->timeIsValid($dayConfig['start_time'] ?? '')
+            && $this->timeIsValid($dayConfig['end_time'] ?? '');
+    }
+
+    /**
+     * @since NEXT
+     */
+    private function timeIsValid(mixed $time): bool
+    {
+        return is_string($time) && '' !== trim($time) && false !== strtotime($time);
     }
 
     private function getDatesForWeekdayInPeriod(DateTimeImmutable $startDate, DateTimeImmutable $endDate): DatePeriod
@@ -119,13 +142,22 @@ class PeriodFieldService
         );
     }
 
-    private function buildDateConfig(DateTimeImmutable $date, array $dayConfig): array
+    private function buildPeriodConfig(DateTimeImmutable $startDate, DateTimeImmutable $endDate): array
     {
         return [
-            'start_date' => $date->format('d-m-Y'),
-            'end_date' => $date->format('d-m-Y'),
-            'start_time' => $dayConfig['start_time'],
-            'end_time' => $dayConfig['end_time'],
+            'start_date' => $startDate->format('d-m-Y'),
+            'end_date' => $endDate->format('d-m-Y'),
+        ];
+    }
+
+    /**
+     * @since NEXT
+     */
+    private function buildDateConfig(DateTimeImmutable $date, array $dayConfig): array
+    {
+        return $this->buildPeriodConfig($date, $date) + [
+            'start_time' => trim($dayConfig['start_time']),
+            'end_time' => trim($dayConfig['end_time']),
         ];
     }
 }
